@@ -5,7 +5,24 @@ import java.util.*;
 
 public class ANTLR2Peg extends ANTLRv4ParserBaseListener {
 	ParseTreeProperty<String> prog = new ParseTreeProperty<String>();
-  String pre = ""; 
+	
+  String pre = "local m = require 'pegparser.parser'\n"
+             + "local pretty = require 'pegparser.pretty'\n"
+             + "local coder = require 'pegparser.coder'\n"
+             + "local recovery = require 'pegparser.recovery'\n"
+             + "local ast = require'pegparser.ast'\n"
+             + "local util = require'pegparser.util'\n\n"
+             + "local s = [===[\n";
+  
+  String pos = "]===]\n\n"
+             + "g = m.match(s)\n"
+             + "print(m.match(s))\n"
+             + "print(pretty.printg(g, true), '\\n')\n"
+             + "local p = coder.makeg(g, 'ast')\n"
+             + "local dir = util.getPath(arg[0])\n"
+             + "util.testYes(dir .. '/yes/', 'dot', p)\n";
+
+              
   final String assertMsg = "Opção não suportada pelo pegparser";
   
   public void setCode(ParseTree node, String code) { 
@@ -35,10 +52,10 @@ public class ANTLR2Peg extends ANTLRv4ParserBaseListener {
 	@Override 
 	public void exitGrammarSpec(ANTLRv4Parser.GrammarSpecContext ctx) {
 		//grammarDecl prequelConstruct* rules modeSpec* EOF
-		String code = getCode(ctx.grammarDecl());
-		code += " = [===[\n";
+		String code = pre;
+    pre += getCode(ctx.grammarDecl());
 		code += getCode(ctx.rules());
-		code += "\n]===]";
+		code += pos;
 		setCode(ctx, code);
 	}
 	
@@ -81,15 +98,13 @@ public class ANTLR2Peg extends ANTLRv4ParserBaseListener {
 	@Override
 	public void exitRules(ANTLRv4Parser.RulesContext ctx) { 
 		StringBuilder buf = new StringBuilder();
-     
-    buf.append(pre);
 
     for (ANTLRv4Parser.RuleSpecContext rsctx : ctx.ruleSpec()) {
     	if (rsctx.parserRuleSpec() != null) {
-    		System.out.println("syn " + getCode(rsctx.parserRuleSpec()));
+    		//System.out.println("syn " + getCode(rsctx.parserRuleSpec()));
     		buf.append(getCode(rsctx.parserRuleSpec()) + "\n");
     	} else {
-    		System.out.println("lex: " + rsctx.lexerRuleSpec().getText());
+    		//System.out.println("lex: " + rsctx.lexerRuleSpec().getText());
     		buf.append(getCode(rsctx.lexerRuleSpec()) + "\n");
     	}
       
@@ -233,7 +248,7 @@ public class ANTLR2Peg extends ANTLRv4ParserBaseListener {
 	@Override public void exitLexerCommands(ANTLRv4Parser.LexerCommandsContext ctx) {
 		int n = ctx.getChildCount();
 		String cmd = ctx.getChild(1).getText();
-		System.out.println("n = " + n + "  cmd = " + cmd + (cmd.equals("skip")));
+		//System.out.println("n = " + n + "  cmd = " + cmd + (cmd.equals("skip")));
 		assertFeature(n == 2 && ctx.getChild(1).getText().equals("skip"), ctx);
 	}
 	
@@ -349,7 +364,6 @@ public class ANTLR2Peg extends ANTLRv4ParserBaseListener {
 		} else {
 			copyText(ctx, ctx.getChild(0));
 		}
-		System.out.println("setElement " + getCode(ctx));
 	}
 	
 	@Override public void exitBlock(ANTLRv4Parser.BlockContext ctx) { 
