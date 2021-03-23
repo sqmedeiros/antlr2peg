@@ -1,0 +1,52 @@
+To pass the tests in the ANTLR directory it is necessary to change only rules stmt and STRING.
+
+* Rule stmt
+  - Original rule
+  stmt <- node_stmt / edge_stmt / attr_stmt / id '=' id / subgraph
+  
+  - Problem: id \in L(node_stmt)  and  id s1 \in L(edge_stmt), L(id '=' id)
+            
+  - Solution: put alternatives "id '=' id" and "edge_stmt" before "node_stmt"
+  stmt <- id '=' id / edge_stmt / node_stmt / attr_stmt / subgraph
+  
+  
+* Rule STRING
+  - Original rule in ANTLR
+  STRING  :  '"' ( '\\"' | . )*? '"'
+  
+  - Translation:
+  STRING  <-  '"' ('\\"'  /  .)*? '"'
+  
+  - Problem: This is a general problem. Expression .* consumes the remaining input
+  and the matching of '"' fails. A pattern like p*? could be simplified as p* in
+  PEGs. I guess ANTLR did not use ~['"'] because the other alternative of the choice
+  is not a character set.
+  
+  - Solution: Use a predicate to test whether it is possible to match
+  FIRST(p), where p is the expression that follows . pegparser does not support
+  the use of '\\' as a escape character.
+  STRING  <-  '"' ('\\"'  / !'"' .)*? '"'
+
+
+* Rule COMMENT
+  - Original ANTLR rule:
+  COMMENT  :   '/*' .*? '*/'
+  
+  - Translation:
+  COMMENT   <-   '/*' .*? '*/'
+  
+  - Problem: Same as in STRING
+  
+  - Solution:
+  
+  
+* Rule LINE_COMMENT
+  - Original ANTLR rule:
+  LINE_COMMENT  :  '//' .*? '\r'? '\n'
+  
+  - Translation:
+  LINE_COMMENT  <- '//' .*? '\r'? '\n'
+  
+  - Problem: Same as in STRING
+  
+  - Solution:

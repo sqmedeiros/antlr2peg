@@ -1,0 +1,9 @@
+* Rule HTML_STRING
+  - Original ANTLR rule:
+  HTML_STRING  :   '<' ( TAG | ~ [<>] )* '>'
+  
+  - Translation:
+  HTML_STRING  <-  '<' (TAG  /  !([<>]) .)* '>'
+  
+  
+  
