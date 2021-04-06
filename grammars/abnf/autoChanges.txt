@@ -1,0 +1,16 @@
+* Rule ProseValue
+  - Original ANTLR rule:
+  ProseValue : '<' ( ~ '>' )* '>';
+  
+  - Translation:
+  ProseValue   <-   '<' (!('>') .)* '>'
+  
+  
+* Rule STRING
+  - Original ANTLR rule:
+  STRING : ( '%s' | '%i' )? '"' ( ~ '"' )* '"';
+  
+  - Translation:
+  STRING   <-   ('%s'  /  '%i')? '"' (!('"') .)* '"'
+  
+  
