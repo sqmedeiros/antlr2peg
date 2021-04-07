@@ -1,0 +1,5 @@
+Family ClientAndServerFam = {
+  Component Type ClientT = {
+    Port sendRequest : ClientPortT    = new ClientPortT;    
+  }  
+}

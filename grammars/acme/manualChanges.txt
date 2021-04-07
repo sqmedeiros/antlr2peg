@@ -1,0 +1,81 @@
+To pass the tests in the ANTLR directory it is necessary to do a minor change in 
+
+* pegparser code:
+  - Change the file extesion from 'dot' to 'acmetest' in the following line:
+  util.testYes(dir .. '/yes/', 'dot', p)
+
+
+
+* Remove '-' from the charset of IDENTIFIER
+
+* Rule acmePortDeclaration:
+  - Original rule in ANTLR:
+  acmePortDeclaration
+   : PORT identifier (COLON acmePortTypeRef (COMMA acmePortTypeRef)*)? ((SEMICOLON)? | (ASSIGN ((acmePortBody (SEMICOLON)?) | (NEW acmePortInstantiatedTypeRef (COMMA acmePortInstantiatedTypeRef)* ((SEMICOLON) | (EXTENDED WITH acmePortBody (SEMICOLON)?))))));
+
+  - Problem: In the alternative ((SEMICOLON)? | (ASSIGN ...
+  the first alternative (SEMICOLON)? matches the empty string.
+  
+  - Solution: Put SEMICOLON as the last alternative
+  
+  
+
+
+
+* Rule rulelist
+  - Original rule in ANTLR
+  rulelist : rule_* EOF
+  
+  - Problem (minor): pegparser complains that EOF was not defined
+  
+  - Solution: change EOF to !. (I thought pegparser already tried to match the whole input).
+  Better future solution: extend pegparser to have a default EOF
+  rulelist : rule_* !.
+
+
+* Rules involved rulelist, rules, elements, alternatation, concatenation, repetition, element
+  - Original rules in ANTLR (excerpt):
+  rulelist : rule_* EOF;
+  rule_ : ID '=' '/'? elements;
+  elements : alternation;
+  alternation : concatenation ( '/' concatenation )*;
+  concatenation : repetition+;
+  repetition: repeat? element;
+  element: ID | ...
+
+  - Problem: A valid rule starts with ID, and a concatetation may be a sequence of IDs,
+    so an ID that names a rule may be matched as part of a concatetation.
+    More formally: FIRST(repetition+) \cap FOLLOW(repetition+) = not empty (is { ID }) 
+
+  - Solution:
+  Change rule 'element1 to check if an ID indicates the beginning of a new rule,
+  i.e., check if ID if followed by '='
+  element   <-   ID !'='
+
+
+* Rule COMMENT
+  - Original ANTLR rule:
+  COMMENT : ';' ~ ( '\n' | '\r' )* '\r'? '\n';
+  
+  - Translation:
+  COMMENT   <-   ';' !(('\n'  /  '\r')) .* '\r'? '\n'
+  
+  - Problem: This is a general problem. Expression .* consumes the remaining input
+  and the matching of '\n' fails. It seems the ANTLR grammar could use something as
+  ~['\n''\r'] because all the alternatives of the choice are a single character.
+  
+  - Solution: Use a predicate to test whether it is possible to match
+  FIRST(p), where p is the expression that follows . pegparser does not support
+  the use of '\\' as a escape character.
+  COMMENT   <-   ';' (!(%nl) .)* %nl
+
+
+* Rule repeat
+  - Original rule in ANTLR
+  repeat : INT  |  ( INT? '*' INT? )
+  
+  - Problem: INT \in L(INT)  and  INT s1 \in L(INT? '*' INT?)
+            
+  - Solution: put alternative "( INT? '*' INT? )" before "INT"
+  repeat <- ( INT? '*' INT? ) / INT
+  
