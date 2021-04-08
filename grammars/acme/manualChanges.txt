@@ -1,12 +1,25 @@
 To pass the tests in the ANTLR directory it is necessary to do a minor change in 
 
+
+==== Minor Problems ====
+
 * pegparser code:
   - Change the file extesion from 'dot' to 'acmetest' in the following line:
   util.testYes(dir .. '/yes/', 'dot', p)
 
+* rule filename: pegparser could not handle the escape sequence '\\'. 
+  - Solution: changed '\\' to just '\'
+  
+* rule IDENTIFIER: pegparser could not recognize '-' as a symbol of a character class
+  - Original rule:
+  IDENTIFIER   <-   [a-zA-Z] [a-zA-Z0-9_-]*
+  
+  - Solution:
+  IDENTIFIER   <-   [a-zA-Z] ([a-zA-Z0-9_] / '-')*
+  
 
+==== Interesting (General) Problems ====
 
-* Remove '-' from the charset of IDENTIFIER
 
 * Rule acmePortDeclaration:
   - Original rule in ANTLR:
@@ -16,11 +29,27 @@ To pass the tests in the ANTLR directory it is necessary to do a minor change in
   - Problem: In the alternative ((SEMICOLON)? | (ASSIGN ...
   the first alternative (SEMICOLON)? matches the empty string.
   
-  - Solution: Put SEMICOLON as the last alternative
+  - Solution: Put SEMICOLON as the last alternative. Could try to do this automatically
   
   distinctVariableSetDeclaration <- COLON / SET_DECLARE
 
   acmePropertyValueDeclaration   <-   INTEGER_LITERAL   /  FLOATING_POINT_LITERAL
+
+
+* Lexical elements which are prefixes of other ones:
+  - INTEGER_LITERAL and FLOATING_POINT_LITERAL: this causes a conflict in rule
+  literalConstant:
+  literalConstant   <-   ((INTEGER_LITERAL )   /  (FLOATING_POINT_LITERAL ) ...
+  
+  - COLON and SET_DECLARE: this causes a conflict in rule variableSetDeclaration
+  variableSetDeclaration   <-   (distinctVariableSetDeclaration   /  (identifier (COMMA identifier )* ((COLON   /  SET_DECLARE ) ...
+
+  - Matching a keyword as an identifier and vice-versa:
+  Added a predicate to the following rules:
+  IDENTIFIER   <-   !FORALL !SET !EXISTS !PORT [a-zA-Z] ([a-zA-Z0-9_] / '-')*
+  PORT   <-   P O R T !([a-zA-Z0-9_] / '-')
+  
+  
 
 
 * Rule rulelist
