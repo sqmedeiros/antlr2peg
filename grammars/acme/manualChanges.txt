@@ -18,8 +18,9 @@ To pass the tests in the ANTLR directory it is necessary to do a minor change in
   
   - Solution: Put SEMICOLON as the last alternative
   
-  
+  distinctVariableSetDeclaration <- COLON / SET_DECLARE
 
+  acmePropertyValueDeclaration   <-   INTEGER_LITERAL   /  FLOATING_POINT_LITERAL
 
 
 * Rule rulelist

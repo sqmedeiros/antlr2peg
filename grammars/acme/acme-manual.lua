@@ -9,7 +9,8 @@ local s = [===[
 acmeCompUnit   <-   (acmeImportDeclaration )* (acmeSystemDeclaration   /  acmeFamilyDeclaration   /  acmeDesignDeclaration )+ 
 acmeImportDeclaration   <-   IMPORT (filename   /  stringLiteral ) SEMICOLON 
 stringLiteral   <-   STRING_LITERAL 
-filename   <-   ('$'   /  '%' )? IDENTIFIER ((('.'   /  ':'   /  '-'   /  '+'   /  '\\'   /  '\\\\'   /  '/'   /  '$'   /  '%' ) )+ IDENTIFIER )* 
+--filename   <-   ('$'   /  '%' )? IDENTIFIER ((('.'   /  ':'   /  '-'   /  '+'   /  '\\'   /  '\\\\'   /  '/'   /  '$'   /  '%' ) )+ IDENTIFIER )*
+filename   <-   ('$'   /  '%' )? IDENTIFIER ((('.'   /  ':'   /  '-'   /  '+'   /  '\'   /  '\\\\'   /  '/'   /  '$'   /  '%' ) )+ IDENTIFIER )*  
 identifier   <-   IDENTIFIER 
 codeLiteral   <-   STRING_LITERAL 
 acmeFamilyDeclaration   <-   (FAMILY   /  STYLE ) identifier (SEMICOLON   /  (ASSIGN acmeFamilyBody (SEMICOLON )? )   /  (EXTENDS acmeFamilyRef (COMMA acmeFamilyRef )* (SEMICOLON   /  (WITH acmeFamilyBody (SEMICOLON )? ) ) ) ) 
@@ -128,7 +129,8 @@ ATTACHEDPORTS   <-   A T T A C H E D P O R T S
 ATTACHEDROLES   <-   A T T A C H E D R O L E S
 BANG   <-   '!'
 BINDINGS   <-   B I N D I N G S
-COLON   <-   ':'
+--COLON   <-   ':'
+COLON   <-   ':' !'!'
 COMMA   <-   ','
 COLLECT   <-   C O L L E C T
 COMPONENT   <-   C O M P O N E N T
@@ -159,7 +161,8 @@ HEURISTIC   <-   H E U R I S T I C
 IFF   <-   '<->'
 IMPORT   <-   I M P O R T
 IN   <-   I N
-INT   <-   (I N T)  /  (I N T E G E R)
+--INT   <-   (I N T)  /  (I N T E G E R)
+INT   <-   ((I N T)  /  (I N T E G E R)) !([a-zA-Z0-9_] / '-')
 INVARIANT   <-   I N V A R I A N T
 IMPLIES   <-   '->'
 LBRACE   <-   '{'
@@ -181,7 +184,8 @@ PUBLIC   <-   P U B L I C
 PRIVATE   <-   P R I V A T E
 POWER   <-   P O W E R
 PLUS   <-   '+'
-PORT   <-   P O R T
+--PORT   <-   P O R T
+PORT   <-   P O R T !([a-zA-Z0-9_] / '-')
 PORTS   <-   P O R T S
 PROPERTY   <-   P R O P E R T Y
 PROPERTIES   <-   P R O P E R T I E S
@@ -240,14 +244,16 @@ Y   <-   ('y'  /  'Y')
 Z   <-   ('z'  /  'Z')
 BOOLEAN   <-   TRUE  /  FALSE
 FLOATING_POINT_LITERAL   <-   ('-'  /  '+')? [0-9]+ '.' [0-9]+
-INTEGER_LITERAL   <-   [0-9]+
+--INTEGER_LITERAL   <-   [0-9]+
+INTEGER_LITERAL   <-   [0-9]+ !'.'
 --STRING_LITERAL   <-   '"' .*? '"'
 STRING_LITERAL   <-   '"' (!'"' .)* '"'
 --IDENTIFIER   <-   [a-zA-Z] [a-zA-Z0-9_-]*
-IDENTIFIER   <-   [a-zA-Z] [a-zA-Z0-9_]*
+IDENTIFIER   <-   !FORALL !SET !EXISTS !PORT [a-zA-Z] ([a-zA-Z0-9_] / '-')*
 --LINE_COMMENT   <-   '//' !([\r\n]) .*
 LINE_COMMENT   <-   '//' (!(%nl) .)* %nl
-BLOCK_COMMENT   <-   '/*' .*? '*/'
+COMMENT              <- '//' (!%nl .)*  /  '/*' (!'*/' .)* '*/'
+--BLOCK_COMMENT   <-   '/*' .*? '*/'
 WS   <-   [ \r\n\t]+
 ]===]
 
