@@ -43,69 +43,56 @@ To pass the tests in the ANTLR directory it is necessary to do a minor change in
   
   - COLON and SET_DECLARE: this causes a conflict in rule variableSetDeclaration
   variableSetDeclaration   <-   (distinctVariableSetDeclaration   /  (identifier (COMMA identifier )* ((COLON   /  SET_DECLARE ) ...
+    
+    Changed rule COLON, rule SET_DECLARE remained the same:
+    COLON   <-   ':' !'!'
+    SET_DECLARE   <-   ':!'
 
-  - Matching a keyword as an identifier and vice-versa:
+
+  - Matching a keyword as an identifier and vice-versa: try to better understand the
+  rules involved with this conflict
   Added a predicate to the following rules:
   IDENTIFIER   <-   !FORALL !SET !EXISTS !PORT [a-zA-Z] ([a-zA-Z0-9_] / '-')*
   PORT   <-   P O R T !([a-zA-Z0-9_] / '-')
   
   
-
-
-* Rule rulelist
-  - Original rule in ANTLR
-  rulelist : rule_* EOF
   
-  - Problem (minor): pegparser complains that EOF was not defined
-  
-  - Solution: change EOF to !. (I thought pegparser already tried to match the whole input).
-  Better future solution: extend pegparser to have a default EOF
-  rulelist : rule_* !.
 
+* Rules related to COMMENT
+  - ANTLR rules named LINE_COMMENT and BLOCK_COMMENT deal with comments,
+    while in pegparser we should use rule COMMENT
 
-* Rules involved rulelist, rules, elements, alternatation, concatenation, repetition, element
-  - Original rules in ANTLR (excerpt):
-  rulelist : rule_* EOF;
-  rule_ : ID '=' '/'? elements;
-  elements : alternation;
-  alternation : concatenation ( '/' concatenation )*;
-  concatenation : repetition+;
-  repetition: repeat? element;
-  element: ID | ...
-
-  - Problem: A valid rule starts with ID, and a concatetation may be a sequence of IDs,
-    so an ID that names a rule may be matched as part of a concatetation.
-    More formally: FIRST(repetition+) \cap FOLLOW(repetition+) = not empty (is { ID }) 
-
-  - Solution:
-  Change rule 'element1 to check if an ID indicates the beginning of a new rule,
-  i.e., check if ID if followed by '='
-  element   <-   ID !'='
-
-
-* Rule COMMENT
-  - Original ANTLR rule:
-  COMMENT : ';' ~ ( '\n' | '\r' )* '\r'? '\n';
+  - Original ANTLR rule for BLOCK_COMMENT:
+  BLOCK_COMMENT: '/*' .*? '*/'
   
   - Translation:
-  COMMENT   <-   ';' !(('\n'  /  '\r')) .* '\r'? '\n'
+  BLOCK_COMMENT: '/*' .*? '*/'
   
   - Problem: This is a general problem. Expression .* consumes the remaining input
-  and the matching of '\n' fails. It seems the ANTLR grammar could use something as
-  ~['\n''\r'] because all the alternatives of the choice are a single character.
+  and the matching of '*/' fails.
   
   - Solution: Use a predicate to test whether it is possible to match
-  FIRST(p), where p is the expression that follows . pegparser does not support
-  the use of '\\' as a escape character.
-  COMMENT   <-   ';' (!(%nl) .)* %nl
+  FIRST(p), where p is the expression that follows. 
+  COMMENT   <-   '/*' (!'*/' .)* '*/'
+
+  
+  - Original ANTLR rule for LINE_COMMENT (auto):
+  LINE_COMMENT: '//' ~ [\r\n]*
+  
+  - Translation (no problem, auto): a minor problem related to '\r' and '\n'
+  LINE_COMMENT   <-   '//' (!(%nl) .)* %nl
+  
+  
+* STRING_LITERAL
+  - Same problem of BLOCK_COMMENT
+  
+  - Original ANTLR_RULE:
+  STRING_LITERAL: '"' .*? '"'
+  
+  - Translation:
+  STRING_LITERAL   <-   '"' .*? '"'
+
+  - Solution:
+  STRING_LITERAL   <-   '"' (!'"' .)* '"'
 
 
-* Rule repeat
-  - Original rule in ANTLR
-  repeat : INT  |  ( INT? '*' INT? )
-  
-  - Problem: INT \in L(INT)  and  INT s1 \in L(INT? '*' INT?)
-            
-  - Solution: put alternative "( INT? '*' INT? )" before "INT"
-  repeat <- ( INT? '*' INT? ) / INT
-  
