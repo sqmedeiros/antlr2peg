@@ -17,7 +17,7 @@ Family ClientAndServerFam = {
   invariant Forall c : connector in self.connectors | 
     declaresType(c, interLayerRequestT) AND satisfiesType(c, interLayerRequestT) ;
     
-  analysis mustBeOfType(e : element, types : set {type}) : boolean =
+  analysis mustBeOfType(types : set {type}) : boolean =
     Exists t in types | 
       declaresType(e, t) ;
       

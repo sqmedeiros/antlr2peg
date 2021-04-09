@@ -55,8 +55,51 @@ To pass the tests in the ANTLR directory it is necessary to do a minor change in
   IDENTIFIER   <-   !FORALL !SET !EXISTS !PORT [a-zA-Z] ([a-zA-Z0-9_] / '-')*
   PORT   <-   P O R T !([a-zA-Z0-9_] / '-')
   
+  = Explaining error related to IDENTIFIER and FORALL (code):
+  - Acme exemple: invariant Forall c1 : ...
+  
+  Error when matching c1. The parser matches 'Forall' as an IDENTIFIER and fails maching 'c1' later.
+  In rule designrule, there is a concatenation INVARIANT designRuleExpression. After matching
+  INVARIANT, there is a long chain of non-terminals and the parser tries to match a primitiveExpression: 
+  primitiveExpression   <-   literalConstant   /  reference   /  parentheticalExpression   /  setExpression   /  literalSequence   /  literalRecord   /  quantifiedExpression   /  sequenceExpression
+  
+  'Forall' is part of quantifiedExpression, but alternative reference (given below) matches first:
+  reference   <-   identifier (DOT (identifier   /  (setReference ) ) )* (actualParams )? 
+
+  
+  = Explaining erro related to IDENTIFIER and EXISTS:    
+  - Acme example: Exists t in types | 
+  
+  - Error similar to FORALL, as EXISTS is an alternative of rule quantifiedExpression
+
+  - Explaining error related to IDENTIFIER and PORT:
+    analysis numberOfPorts(c : component, t : type) : int = size(portsOfType(c, t));
+  
+  - Rule PORT wrongly matches a prefix os portsOfType.
+    Rule acmeDesignAnalysisDeclaration should match. It has two alternatives, one ends
+    with "ASSIGN designRuleExpression (acmePropertyBlock )? SEMICOLON )", and another
+    one with "ASSIGN (codeLiteral   /  (identifier (DOT identifier )* ) ) SEMICOLON )".
+    The first alternative matches. As mentioned before, there is a long chain of non-terminals from designRuleExpession to primitiveExpression: 
+  primitiveExpression   <-   literalConstant   /  reference   /  parentheticalExpression   /  setExpression   /  literalSequence   /  literalRecord   /  quantifiedExpression   /  sequenceExpression
+  
+    The input 'portsOfType' is a valid reference, but PORT is a literal constant, so the first alternative of primitiveExpression wrongly matches.
   
   
+  = Explaining error related to IDENTIFIER and SET (code):
+   analysis mustBeOfType(types : set {type}) : boolean =
+   
+  - Error when matching '{'. The parser wrongly matches 'set' as an IDENTIFIER.
+  Original rule: acmeDesignAnalysisDeclaration
+  Let's follow from rule formalParam:
+  formalParam   <-   identifier COLON acmeTypeRef 
+  
+  Rule acmeTypeRef is as follows:
+  acmeTypeRef   <-   ((SYSTEM )   /  (COMPONENT )   /  (GROUP )   /  (CONNECTOR )   /  (PORT )   /  (ROLE )   /  (PROPERTY )   /  (ELEMENT )   /  (TYPE )   /  (REPRESENTATION )   /  (reference )   /  (acmePropertyTypeStructure ) ) 
+   
+  The last alternative, acmePropertyTypeStructure, recognizes 'set{type}', but alternative reference
+  matches first, as 'set' is wrongly matched by rule identifier.
+  
+
 
 * Rules related to COMMENT
   - ANTLR rules named LINE_COMMENT and BLOCK_COMMENT deal with comments,
