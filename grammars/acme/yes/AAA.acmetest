@@ -2,7 +2,7 @@ import $AS_PROJECT_PATH\families\MDSFamily.acme;
 
 Family ClientAndServerFam = {
   Component Type ClientT = {
-    Port sendRequest : ClientPortT    = new ClientPortT;    
+    Port sendRequest : ClientPortT = new ClientPortT;    
   }  
    
   Component Type ServerT = {                   
@@ -14,8 +14,7 @@ Family ClientAndServerFam = {
         Forall c2 : component in self.components | 
             connected(c1, c2) -> (declaresType(c1, ClientT) AND declaresType(c2, ServerT)) OR (declaresType(c1, ServerT) AND declaresType(c2, ClientT))  <<label : string = "All pairs of connected components are ClientTwith ServerT.";errMsg : string = "Detected pair(s) of components that falis the ClientT with ServerT constraint!";>>;
    
-  invariant Forall c : connector in self.connectors | 
-    declaresType(c, interLayerRequestT) AND satisfiesType(c, interLayerRequestT) ;
+  invariant Forall c : connector in self.connectors | declaresType(c, interLayerRequestT) ;
     
   analysis mustBeOfType(types : set {type}) : boolean =
     Exists t in types | 

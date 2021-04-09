@@ -42,7 +42,8 @@ acmeGroupDeclaration   <-   GROUP identifier (COLON acmeGroupTypeRef (COMMA acme
 acmeGroupBody   <-   LBRACE (acmeMembersBlock   /  acmePropertyDeclaration   /  designRule )* RBRACE 
 acmeMembersBlock   <-   MEMBERS LBRACE (acmeInstanceRef (COMMA acmeInstanceRef )* )? RBRACE (SEMICOLON )? 
 acmePortTypeDeclaration   <-   PORT TYPE identifier ((SEMICOLON )   /  ((ASSIGN acmePortBody (SEMICOLON )? )   /  (EXTENDS acmePortTypeRef (COMMA acmePortTypeRef )* ((SEMICOLON )   /  (WITH acmePortBody (SEMICOLON )? ) ) ) ) ) 
-acmePortDeclaration   <-   PORT identifier (COLON acmePortTypeRef (COMMA acmePortTypeRef )* )? ((ASSIGN ((acmePortBody (SEMICOLON )? )   /  (NEW acmePortInstantiatedTypeRef (COMMA acmePortInstantiatedTypeRef )* ((SEMICOLON )   /  (EXTENDED WITH acmePortBody (SEMICOLON )? ) ) ) ) ) / (SEMICOLON )?) 
+--acmePortDeclaration   <-   PORT identifier (COLON acmePortTypeRef (COMMA acmePortTypeRef )* )? ((SEMICOLON )?   /  (ASSIGN ((acmePortBody (SEMICOLON )? )   /  (NEW acmePortInstantiatedTypeRef (COMMA acmePortInstantiatedTypeRef )* ((SEMICOLON )   /  (EXTENDED WITH acmePortBody (SEMICOLON )? ) ) ) ) ) ) 
+acmePortDeclaration   <-   PORT identifier (COLON acmePortTypeRef (COMMA acmePortTypeRef )* )? ((ASSIGN ((acmePortBody (SEMICOLON )? )   /  (NEW acmePortInstantiatedTypeRef (COMMA acmePortInstantiatedTypeRef )* ((SEMICOLON )   /  (EXTENDED WITH acmePortBody (SEMICOLON )? ) ) ) ) ) / (SEMICOLON )?)
 acmePortBody   <-   LBRACE (acmePropertyDeclaration   /  designRule   /  acmeRepresentationDeclaration )* RBRACE 
 acmeRoleTypeDeclaration   <-   ROLE TYPE identifier ((SEMICOLON )   /  ((ASSIGN acmeRoleBody (SEMICOLON )? )   /  (EXTENDS acmeRoleTypeRef (COMMA acmeRoleTypeRef )* ((SEMICOLON )   /  (WITH acmeRoleBody (SEMICOLON )? ) ) ) ) ) 
 acmeRoleDeclaration   <-   ROLE identifier (COLON acmeRoleTypeRef (COMMA acmeRoleTypeRef )* )? ((SEMICOLON )   /  (ASSIGN ((acmeRoleBody (SEMICOLON )? )   /  (NEW acmeRoleInstantiatedTypeRef (COMMA acmeRoleInstantiatedTypeRef )* ((SEMICOLON )   /  (EXTENDED WITH acmeRoleBody (SEMICOLON )? ) ) ) ) ) ) 
@@ -185,7 +186,7 @@ PRIVATE   <-   P R I V A T E
 POWER   <-   P O W E R
 PLUS   <-   '+'
 --PORT   <-   P O R T
-PORT   <-   P O R T !([a-zA-Z0-9_] / '-')
+PORT   <-   P O R T  !([a-zA-Z0-9_] / '-')
 PORTS   <-   P O R T S
 PROPERTY   <-   P R O P E R T Y
 PROPERTIES   <-   P R O P E R T I E S
@@ -249,11 +250,13 @@ INTEGER_LITERAL   <-   [0-9]+ !'.'
 --STRING_LITERAL   <-   '"' .*? '"'
 STRING_LITERAL   <-   '"' (!'"' .)* '"'
 --IDENTIFIER   <-   [a-zA-Z] [a-zA-Z0-9_-]*
+--IDENTIFIER   <-  [a-zA-Z] ([a-zA-Z0-9_] / '-')*
 IDENTIFIER   <-   !FORALL !SET !EXISTS !PORT [a-zA-Z] ([a-zA-Z0-9_] / '-')*
 --LINE_COMMENT   <-   '//' !([\r\n]) .*
 LINE_COMMENT   <-   '//' (!(%nl) .)* %nl
-COMMENT              <- '//' (!%nl .)*  /  '/*' (!'*/' .)* '*/'
 --BLOCK_COMMENT   <-   '/*' .*? '*/'
+BLOCK_COMMENT   <-   '/*' (!'*/' .)* '*/'
+COMMENT   <-   LINE_COMMENT / BLOCK_COMMENT
 WS   <-   [ \r\n\t]+
 ]===]
 

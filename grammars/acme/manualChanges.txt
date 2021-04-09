@@ -30,6 +30,7 @@ To pass the tests in the ANTLR directory it is necessary to do a minor change in
   the first alternative (SEMICOLON)? matches the empty string.
   
   - Solution: Put SEMICOLON as the last alternative. Could try to do this automatically
+  acmePortDeclaration   <-   PORT identifier (COLON acmePortTypeRef (COMMA acmePortTypeRef )* )? ((ASSIGN ((acmePortBody (SEMICOLON )? )   /  (NEW acmePortInstantiatedTypeRef (COMMA acmePortInstantiatedTypeRef )* ((SEMICOLON )   /  (EXTENDED WITH acmePortBody (SEMICOLON )? ) ) ) ) ) / (SEMICOLON )?)
   
   distinctVariableSetDeclaration <- COLON / SET_DECLARE
 
@@ -40,6 +41,8 @@ To pass the tests in the ANTLR directory it is necessary to do a minor change in
   - INTEGER_LITERAL and FLOATING_POINT_LITERAL: this causes a conflict in rule
   literalConstant:
   literalConstant   <-   ((INTEGER_LITERAL )   /  (FLOATING_POINT_LITERAL ) ...
+  
+  SOLUTION: INTEGER_LITERAL   <-   [0-9]+ !'.'
   
   - COLON and SET_DECLARE: this causes a conflict in rule variableSetDeclaration
   variableSetDeclaration   <-   (distinctVariableSetDeclaration   /  (identifier (COMMA identifier )* ((COLON   /  SET_DECLARE ) ...
@@ -84,6 +87,8 @@ To pass the tests in the ANTLR directory it is necessary to do a minor change in
   
     The input 'portsOfType' is a valid reference, but PORT is a literal constant, so the first alternative of primitiveExpression wrongly matches.
   
+  - Solution: PORT   <-   P O R T  !([a-zA-Z0-9_] / '-')
+  
   
   = Explaining error related to IDENTIFIER and SET (code):
    analysis mustBeOfType(types : set {type}) : boolean =
@@ -98,6 +103,14 @@ To pass the tests in the ANTLR directory it is necessary to do a minor change in
    
   The last alternative, acmePropertyTypeStructure, recognizes 'set{type}', but alternative reference
   matches first, as 'set' is wrongly matched by rule identifier.
+  
+  = Erro related to matching an IDENTIFIER as an INTEGER
+  - ACME: invariant Forall c : connector in self.connectors | declaresType(c, interLayerRequestT) ;
+  
+  - Problem: wrongly matches as INT a prefix of interLayerRequestT
+  Related to rule primitiveExpression, as INT is a literalConstant
+  
+  - Solution: INT   <-   ((I N T)  /  (I N T E G E R)) !([a-zA-Z0-9_] / '-')
   
 
 
