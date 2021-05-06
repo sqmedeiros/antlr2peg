@@ -4,6 +4,7 @@ local coder = require 'pegparser.coder'
 local recovery = require 'pegparser.recovery'
 local ast = require'pegparser.ast'
 local util = require'pegparser.util'
+local first = require'pegparser.first'
 
 local s = [===[
 graph   <-   STRICT? (GRAPH   /  DIGRAPH ) id? '{' stmt_list '}' 
@@ -42,6 +43,10 @@ WS   <-   [ \t\n\r]+
 g = m.match(s)
 print(m.match(s))
 print(pretty.printg(g, true), '\n')
+first.calcFst(g)
+first.calcFlw(g)
+first.getChoiceReport(g)
+first.getRepReport(g)
 local p = coder.makeg(g, 'ast')
 local dir = util.getPath(arg[0])
 util.testYes(dir .. '/yes/', 'dot', p)
