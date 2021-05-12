@@ -5,8 +5,13 @@ public class MainListener {
  
   public static void main(String[] args) throws Exception {
     CharStream input;
-    if (args.length > 0)
+    String fileExt = "";
+    if (args.length > 0) {
       input = CharStreams.fromFileName(args[0]);
+      if (args.length >= 1) {
+        fileExt = args[1];
+      }
+    }
     else
       input = CharStreams.fromStream(System.in);
     
@@ -18,7 +23,7 @@ public class MainListener {
 
     ParseTreeWalker walker = new ParseTreeWalker();
 	
-    ANTLR2Peg trans = new ANTLR2Peg();
+    ANTLR2Peg trans = new ANTLR2Peg(fileExt);
     
     walker.walk(trans, tree);
     

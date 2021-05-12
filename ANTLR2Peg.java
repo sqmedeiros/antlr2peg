@@ -5,23 +5,44 @@ import java.util.*;
 
 public class ANTLR2Peg extends ANTLRv4ParserBaseListener {
 	ParseTreeProperty<String> prog = new ParseTreeProperty<String>();
-	
-  String pre = "local m = require 'pegparser.parser'\n"
-             + "local pretty = require 'pegparser.pretty'\n"
-             + "local coder = require 'pegparser.coder'\n"
-             + "local recovery = require 'pegparser.recovery'\n"
-             + "local ast = require'pegparser.ast'\n"
-             + "local util = require'pegparser.util'\n\n"
-             + "local s = [===[\n";
-  
-  String pos = "]===]\n\n"
-             + "g = m.match(s)\n"
-             + "print(m.match(s))\n"
-             + "print(pretty.printg(g, true), '\\n')\n"
-             + "local p = coder.makeg(g, 'ast')\n"
-             + "local dir = util.getPath(arg[0])\n"
-             + "util.testYes(dir .. '/yes/', 'dot', p)\n";
+  String fileExt;
+  String pre;
+  String pos;
 
+  ANTLR2Peg (String fileExt) {
+    super();
+    this.fileExt = fileExt;
+    setPre();
+    setPos();
+  }
+
+  void setPre () {
+    pre = "local m = require 'pegparser.parser'\n"
+        + "local pretty = require 'pegparser.pretty'\n"
+        + "local coder = require 'pegparser.coder'\n"
+        + "local recovery = require 'pegparser.recovery'\n"
+        + "local ast = require'pegparser.ast'\n"
+        + "local util = require'pegparser.util'\n"
+        + "local first = require'pegparser.first'\n"
+        + "local cfg2peg = require'pegparser.cfg2peg'\n\n"
+        + "local s = [===[\n";
+  }
+
+  void setPos () {
+    pos = "]===]\n\n"
+       + "g = m.match(s)\n"
+       + "print(m.match(s))\n"
+       + "print(pretty.printg(g, true), '\\n')\n"
+       + "first.calcFst(g)\n"
+       + "first.calcFlw(g)\n"
+       + "first.getChoiceReport(g)\n"
+       + "first.getRepReport(g)\n"
+       + "local p = coder.makeg(g, 'ast')\n"
+       + "local peg = cfg2peg.convert(g)\n"
+       + "print(pretty.printg(peg, true), '\\n')\n"
+       + "local dir = util.getPath(arg[0])\n"
+       + "util.testYes(dir .. '/yes/', '" + this.fileExt + "', p)\n";
+  }
               
   final String assertMsg = "Opção não suportada pelo pegparser";
   
