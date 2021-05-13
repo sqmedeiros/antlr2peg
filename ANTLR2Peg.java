@@ -8,10 +8,12 @@ public class ANTLR2Peg extends ANTLRv4ParserBaseListener {
   String fileExt;
   String pre;
   String pos;
+  String ruleId;
 
-  ANTLR2Peg (String fileExt) {
+  ANTLR2Peg (String fileExt, String ruleId) {
     super();
     this.fileExt = fileExt;
+    this.ruleId = ruleId;
     setPre();
     setPos();
   }
@@ -38,7 +40,7 @@ public class ANTLR2Peg extends ANTLRv4ParserBaseListener {
        + "first.getChoiceReport(g)\n"
        + "first.getRepReport(g)\n"
        + "local p = coder.makeg(g, 'ast')\n"
-       + "local peg = cfg2peg.convert(g)\n"
+       + "local peg = cfg2peg.convert(g, '" + this.ruleId + "')\n"
        + "print(pretty.printg(peg, true), '\\n')\n"
        + "local dir = util.getPath(arg[0])\n"
        + "util.testYes(dir .. '/yes/', '" + this.fileExt + "', p)\n";
@@ -358,8 +360,7 @@ public class ANTLR2Peg extends ANTLRv4ParserBaseListener {
 		
 	@Override 
 	public void exitNotSet(ANTLRv4Parser.NotSetContext ctx) {
-		String code = "!";
-		code += "(" + getCode(ctx.getChild(1)) + ") .";
+		String code = "(!" + getCode(ctx.getChild(1)) + " .)";
 		setCode(ctx, code);
 	}
 	
