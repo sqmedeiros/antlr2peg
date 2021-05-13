@@ -5,17 +5,31 @@ local recovery = require 'pegparser.recovery'
 local ast = require'pegparser.ast'
 local util = require'pegparser.util'
 local first = require'pegparser.first'
-local cfg2peg = require'pegparser.cfg2peg'
+--local cfg2peg = require'pegparser.cfg2peg'
+--Manually fixing the problems after ANTLR2PEG
+--Fixes try to follow an approach that is easy/viable to implement automatically
 
 local s = [===[
 rulelist   <-   rule_* EOF 
 rule_   <-   ID '=' '/'? elements 
 elements   <-   alternation 
 alternation   <-   concatenation ('/' concatenation )* 
-concatenation   <-   repetition+ 
+--[Original] concatenation   <-   repetition+
+concatenation   <-   new_repetition
+
+--[Solution]
+--new_repetition <- repetition new_repetition  /  repetition &(ID  /  EOF  /  ']'  /  '/'  /  ')'  /  !.)
+--[End solution]
+
+--[Altenative solution, which may backtrack less]
+new_repetition <- !ID (repetition new_repetition / repetition) /  &ID new_repetition_aux
+new_repetition_aux <- repetition new_repetition / repetition &(ID  /  EOF  /  ']'  /  '/'  /  ')'  /  !.)
 repetition   <-   repeat? element 
-repeat   <-   INT   /  (INT? '*' INT? ) 
-element   <-   ID   /  group   /  option   /  STRING   /  NumberValue   /  ProseValue 
+--[End alternative]
+
+--[Original] repeat   <-   INT   /  (INT? '*' INT? ) 
+repeat <- ( INT? '*' INT? ) / INT
+element   <-   ID   /  group   /  option   /  STRING   /  NumberValue   /  ProseValue
 group   <-   '(' alternation ')' 
 option   <-   '[' alternation ']' 
 NumberValue   <-   '%' (BinaryValue  /  DecimalValue  /  HexValue)
@@ -42,8 +56,9 @@ first.calcFlw(g)
 first.getChoiceReport(g)
 first.getRepReport(g)
 local p = coder.makeg(g, 'ast')
-local peg = cfg2peg.convert(g, 'ID')
-print(pretty.printg(peg, true), '\n')
+--local peg = cfg2peg.convert(g, 'ID')
+--print(pretty.printg(peg, true), '\n')
 local dir = util.getPath(arg[0])
 util.testYes(dir .. '/yes/', 'abnf', p)
+
 
