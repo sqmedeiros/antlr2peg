@@ -1,4 +1,22 @@
-* Rule ProseValue
+- The peg generated from cfg2peg passes the tests
+
+* cfg2peg rewrote rule 'repeat'
+  - Original =>  repeat : INT  |  ( INT? '*' INT? )
+  - New      =>  repeat <- ( INT? '*' INT? ) / INT 
+  
+        
+* cfg2peg introduced a new rule 'rep_000' in rule 'concatenation':
+  concatenation   <-   repetition+ 
+  
+  The greedy repetition 'repetition+' can not be blind.
+  The modified sequece was:
+  concatenation   <-  rep_000
+  rep_000         <-  repetition rep_000  /  repetition &(ID  /  EOF  /  ']'  /  '/'  /  ')'  /  !.)
+  
+
+* Minor changes done by ANTLR2Peg
+
+Rule ProseValue
   - Original ANTLR rule:
   ProseValue : '<' ( ~ '>' )* '>';
   
