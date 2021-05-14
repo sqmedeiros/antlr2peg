@@ -5,6 +5,7 @@ local recovery = require 'pegparser.recovery'
 local ast = require'pegparser.ast'
 local util = require'pegparser.util'
 local first = require'pegparser.first'
+local cfg2peg = require'pegparser.cfg2peg'
 
 local s = [===[
 graph   <-   STRICT? (GRAPH   /  DIGRAPH ) id? '{' stmt_list '}' 
@@ -32,11 +33,11 @@ DIGIT   <-   [0-9]
 STRING   <-   '"' ('\\"'  /  .)*? '"'
 ID   <-   LETTER (LETTER  /  DIGIT)*
 LETTER   <-   [a-zA-Z\u0080-\u00FF_]
-HTML_STRING   <-   '<' (TAG  /  !([<>]) .)* '>'
+HTML_STRING   <-   '<' (TAG  /  (![<>] .))* '>'
 TAG   <-   '<' .*? '>'
 COMMENT   <-   '/*' .*? '*/'
 LINE_COMMENT   <-   '//' .*? '\r'? '\n'
-PREPROC   <-   '#' !([\r\n]) .*
+PREPROC   <-   '#' (![\r\n] .)*
 WS   <-   [ \t\n\r]+
 ]===]
 
@@ -48,6 +49,8 @@ first.calcFlw(g)
 first.getChoiceReport(g)
 first.getRepReport(g)
 local p = coder.makeg(g, 'ast')
+local peg = cfg2peg.convert(g, 'ID')
+print(pretty.printg(peg, true), '\n')
 local dir = util.getPath(arg[0])
 util.testYes(dir .. '/yes/', 'dot', p)
 

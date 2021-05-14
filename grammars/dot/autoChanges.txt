@@ -1,9 +1,21 @@
-* Rule HTML_STRING
-  - Original ANTLR rule:
-  HTML_STRING  :   '<' ( TAG | ~ [<>] )* '>'
+* Correctly translated the lazy repetitions in the following rules:
+  STRING, COMMENT, LINE_COMMENT HTML_STRING, TAG
   
-  - Translation:
-  HTML_STRING  <-  '<' (TAG  /  !([<>]) .)* '>'
+  - The conversion in rule STRING it was mandatory to pass the
+    tests provided with the grammar.
+    - Original rule: STRING   <-   '"' ('\\"'  /  .)*? '"'
+    - Modified rule: STRING   <-  '"' (!'"' ('\\"'  /  .))* '"'
   
+* Identified the non-LL(1) choice in rule statement:
+  stmt <- node_stmt / edge_stmt / attr_stmt / id '=' id / subgraph
+  
+  - Problem: id \in L(node_stmt)  and  id s1 \in L(edge_stmt), L(id '=' id)
+  - Problem (this conflict does not seem to cause a problem): SUBGRAPH \in L(edge_stmt), L(subgraph)
+            
+  - There are 4 conflicts, the ones marked with *auto* be solved automatically currently:
+    1. node_stmt x edge_stmt (auto: put edge_stmt first)
+    2. node_stmt x 'id' '=' 'id'
+    3. edge_stmt x 'id' '=' 'id' (auto: put edge_stmt first)
+    4. edge_stmt x subgraph
   
   

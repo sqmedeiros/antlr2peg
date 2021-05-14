@@ -5,6 +5,7 @@ To pass the tests in the ANTLR directory it is necessary to change only rules st
   stmt <- node_stmt / edge_stmt / attr_stmt / id '=' id / subgraph
   
   - Problem: id \in L(node_stmt)  and  id s1 \in L(edge_stmt), L(id '=' id)
+  - Problem (this conflict does not seem to cause a problem): SUBGRAPH \in L(edge_stmt), L(subgraph)
             
   - Solution: put alternatives "id '=' id" and "edge_stmt" before "node_stmt"
   stmt <- id '=' id / edge_stmt / node_stmt / attr_stmt / subgraph
@@ -18,15 +19,26 @@ To pass the tests in the ANTLR directory it is necessary to change only rules st
   STRING  <-  '"' ('\\"'  /  .)*? '"'
   
   - Problem: This is a general problem. Expression .* consumes the remaining input
-  and the matching of '"' fails. A pattern like p*? could be simplified as p* in
-  PEGs. I guess ANTLR did not use ~['"'] because the other alternative of the choice
-  is not a character set.
+  and the matching of '"' fails. In ANTLR, pattern *? indicates a lazy repetition,
+  thus an expression like e1*? e2 should be translated as: (!p2 p1)* p2
+  Following this, the previous translation should be:
+  STRING  <-  '"' (!'"' ('\\"'  /  .))* '"'
   
-  - Solution: Use a predicate to test whether it is possible to match
-  FIRST(p), where p is the expression that follows . pegparser does not support
-  the use of '\\' as a escape character.
-  STRING  <-  '"' ('\\"'  / !'"' .)*? '"'
-
+  I guess ANTLR did not use a negated charset because '\\"' is not a single char,
+  so ~['"'] would not match '\\"'.
+  
+  - Solution: From ANTLR Reference (Section 15.6): "Such nongreedy
+  subrules are allowed in both the parser and the lexer, but they are used much
+  more frequently in the lexer."
+  Let us consider only the lexical for a while.
+  The simple translation would be as described above. Should we also consider
+  the FLW set associated the lexical rule?
+  I guess FLW set should not be considered, as ANTLR Reference, Section 5.5, pg 76,
+  says that: "Nongreedy means essentially to “scarf
+  characters until you see what follows the subrule in the lexer rule.” To be
+  more precise, nongreedy subrules match the fewest number of characters
+  while still allowing the entire surrounding rule to match."
+  
 
 * Rule COMMENT
   - Original ANTLR rule:
@@ -50,3 +62,6 @@ To pass the tests in the ANTLR directory it is necessary to change only rules st
   - Problem: Same as in STRING
   
   - Solution:
+  
+* Rules HTML_STRING and TAG:
+  - Same problem of STRING
