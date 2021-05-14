@@ -4,6 +4,8 @@ local coder = require 'pegparser.coder'
 local recovery = require 'pegparser.recovery'
 local ast = require'pegparser.ast'
 local util = require'pegparser.util'
+local first = require'pegparser.first'
+local cfg2peg = require'pegparser.cfg2peg'
 
 local s = [===[
 acmeCompUnit   <-   (acmeImportDeclaration )* (acmeSystemDeclaration   /  acmeFamilyDeclaration   /  acmeDesignDeclaration )+ 
@@ -243,7 +245,7 @@ FLOATING_POINT_LITERAL   <-   ('-'  /  '+')? [0-9]+ '.' [0-9]+
 INTEGER_LITERAL   <-   [0-9]+
 STRING_LITERAL   <-   '"' .*? '"'
 IDENTIFIER   <-   [a-zA-Z] [a-zA-Z0-9_-]*
-LINE_COMMENT   <-   '//' !([\r\n]) .*
+LINE_COMMENT   <-   '//' (![\r\n] .)*
 BLOCK_COMMENT   <-   '/*' .*? '*/'
 WS   <-   [ \r\n\t]+
 ]===]
@@ -251,7 +253,13 @@ WS   <-   [ \r\n\t]+
 g = m.match(s)
 print(m.match(s))
 print(pretty.printg(g, true), '\n')
+first.calcFst(g)
+first.calcFlw(g)
+first.getChoiceReport(g)
+first.getRepReport(g)
 local p = coder.makeg(g, 'ast')
+local peg = cfg2peg.convert(g, 'IDENTIFIER')
+print(pretty.printg(peg, true), '\n')
 local dir = util.getPath(arg[0])
-util.testYes(dir .. '/yes/', 'dot', p)
+util.testYes(dir .. '/yes/', 'acmetest', p)
 

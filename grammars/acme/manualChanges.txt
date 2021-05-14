@@ -1,23 +1,15 @@
+* Need to update the changes. File acme-manual.lua probably needs
+less manual changes given the current acme.lua
+
+
 To pass the tests in the ANTLR directory it is necessary to do a minor change in 
 
 
 ==== Minor Problems ====
 
-* pegparser code:
-  - Change the file extesion from 'dot' to 'acmetest' in the following line:
-  util.testYes(dir .. '/yes/', 'dot', p)
-
 * rule filename: pegparser could not handle the escape sequence '\\'. 
   - Solution: changed '\\' to just '\'
   
-* rule IDENTIFIER: pegparser could not recognize '-' as a symbol of a character class
-  - Original rule:
-  IDENTIFIER   <-   [a-zA-Z] [a-zA-Z0-9_-]*
-  
-  - Solution:
-  IDENTIFIER   <-   [a-zA-Z] ([a-zA-Z0-9_] / '-')*
-  
-
 ==== Interesting (General) Problems ====
 
 
