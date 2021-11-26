@@ -15,7 +15,7 @@ alternation     <-  concatenation ('/' concatenation)*
 concatenation   <-  rep_000
 repetition      <-  repeat? element
 repeat          <-  INT? '*' INT?  /  INT
-element         <-  ID  /  group  /  option  /  STRING  /  NumberValue  /  ProseValue
+element         <-  ID  /  group  /  option  /  string  /  NumberValue  /  ProseValue
 group           <-  '(' alternation ')'
 option          <-  '[' alternation ']'
 NumberValue     <-  '%' (BinaryValue  /  DecimalValue  /  HexValue)
@@ -27,7 +27,7 @@ ID              <-  LETTER (LETTER  /  DIGIT  /  '-')*
 INT             <-  [0-9]+
 COMMENT         <-  ';' (!('\n'  /  '\r') .)* '\r'? '\n'
 WS              <-  ' '  /  '\t'  /  '\r'  /  '\n'
-STRING          <-  ('%s'  /  '%i')? '"' (!'"' .)* '"'
+string          <-  ('%s'  /  '%i')? '"' (!'"' .)* '"'
 LETTER          <-  [a-z]  /  [A-Z]
 BIT             <-  [0-1]
 DIGIT           <-  [0-9]
@@ -57,5 +57,6 @@ local p = coder.makeg(g, 'ast')
 --local peg = cfg2peg.convert(g, 'ID')
 --print(pretty.printg(peg, true), '\n')
 local dir = util.getPath(arg[0])
-util.testYes(dir .. '/yes/', 'abnf', p)
+--util.testYes(dir .. '/yes/', 'abnf', p)
+util.testYes('/home/sergio/software/grammar-based-testing/grammars/abnf/', 'abnf', p)
 
