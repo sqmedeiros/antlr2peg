@@ -19,31 +19,26 @@ public class ANTLR2Peg extends ANTLRv4ParserBaseListener {
   }
 
   void setPre () {
-    pre = "local m = require 'pegparser.parser'\n"
-        + "local pretty = require 'pegparser.pretty'\n"
-        + "local coder = require 'pegparser.coder'\n"
-        + "local recovery = require 'pegparser.recovery'\n"
-        + "local ast = require'pegparser.ast'\n"
-        + "local util = require'pegparser.util'\n"
-        + "local first = require'pegparser.first'\n"
-        + "local cfg2peg = require'pegparser.cfg2peg'\n\n"
+    pre = "local Parser = require 'pegparser.parser'\n"
+        + "local Pretty = require 'pegparser.pretty'\n"
+        + "local Util = require'pegparser.util'\n"
+        + "local Cfg2Peg = require'pegparser.cfg2peg'\n\n"
         + "local s = [===[\n";
   }
 
   void setPos () {
     pos = "]===]\n\n"
-       + "g = m.match(s)\n"
-       + "print(m.match(s))\n"
-       + "print(pretty.printg(g, true), '\\n')\n"
-       + "first.calcFst(g)\n"
-       + "first.calcFlw(g)\n"
-       + "first.getChoiceReport(g)\n"
-       + "first.getRepReport(g)\n"
-       + "local p = coder.makeg(g, 'ast')\n"
-       + "local peg = cfg2peg.convert(g, '" + this.ruleId + "')\n"
-       + "print(pretty.printg(peg, true), '\\n')\n"
-       + "local dir = util.getPath(arg[0])\n"
-       + "util.testYes(dir .. '/yes/', '" + this.fileExt + "', p)\n";
+       + "local g = Parser.match(s)\n"
+       + "assert(g)\n"
+       + "pretty = Pretty.new()\n"
+       + "print(pretty:printg(g, nil, true))\n"
+       + "local c2p = Cfg2Peg.new(g)\n"
+       + "c2p:setPredUse(false)\n"
+       + "c2p:convert('" + this.ruleId + "', true)\n"
+       + "local peg = c2p.peg\n"
+       + "print(pretty:printg(peg, nil, true))\n";
+       //+ "local dir = Util.getPath(arg[0])\n"
+       //+ "Util.testYes(dir .. '/yes/', '" + this.fileExt + "', p)\n";
   }
               
   final String assertMsg = "Opção não suportada pelo pegparser";
