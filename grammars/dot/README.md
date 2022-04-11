@@ -14,8 +14,8 @@ The main aspects of this rewritten are the following ones:
 	causes a translation failure.
 	+ Currently, the keyword 'fragment', used in lexer rules, is being ignored
     
-- DOT-manual-rep.lua: a manual rewritten of some rules of DOT.lua. This rewritten
+- DOT-manual-small.lua: a manual rewritten of some rules of DOT.lua. This rewritten
  encompass the minimal changes in the grammar of DOT.lua that are required to pass
  the tests provided with the DOT.g4 grammar.
  
- - DOT-auto.lua: automatic translations performed after running the antlr2peg translator.
+- DOT-auto.lua: automatic translations performed after running the antlr2peg translator.

@@ -22,7 +22,8 @@ public class ANTLR2Peg extends ANTLRv4ParserBaseListener {
     pre = "local Parser = require 'pegparser.parser'\n"
         + "local Pretty = require 'pegparser.pretty'\n"
         + "local Util = require'pegparser.util'\n"
-        + "local Cfg2Peg = require'pegparser.cfg2peg'\n\n"
+        + "local Cfg2Peg = require'pegparser.cfg2peg'\n"
+        + "local Coder = require'pegparser.coder'\n\n"
         + "local s = [===[\n";
   }
 
@@ -36,9 +37,10 @@ public class ANTLR2Peg extends ANTLRv4ParserBaseListener {
        + "c2p:setPredUse(false)\n"
        + "c2p:convert('" + this.ruleId + "', true)\n"
        + "local peg = c2p.peg\n"
-       + "print(pretty:printg(peg, nil, true))\n";
-       //+ "local dir = Util.getPath(arg[0])\n"
-       //+ "Util.testYes(dir .. '/yes/', '" + this.fileExt + "', p)\n";
+       + "print(pretty:printg(peg, nil, true))\n\n"
+       + "local p = Coder.makeg(peg)\n"
+       + "local dir = Util.getPath(arg[0])\n"
+       + "Util.testYes(dir .. '/yes/', '" + this.fileExt + "', p)\n";
   }
               
   final String assertMsg = "Opção não suportada pelo pegparser";

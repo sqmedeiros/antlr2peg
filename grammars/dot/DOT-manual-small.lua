@@ -1,11 +1,8 @@
-local m = require 'pegparser.parser'
-local pretty = require 'pegparser.pretty'
-local coder = require 'pegparser.coder'
-local recovery = require 'pegparser.recovery'
-local ast = require'pegparser.ast'
-local util = require'pegparser.util'
-local first = require'pegparser.first'
---local cfg2peg = require'pegparser.cfg2peg'
+local Parser = require 'pegparser.parser'
+local Pretty = require 'pegparser.pretty'
+local Util = require'pegparser.util'
+local Cfg2Peg = require'pegparser.cfg2peg'
+local Coder = require'pegparser.coder'
 
 -- Minimal changes required to pass the tests provided with the DOT grammar
 -- We did not translate the lazy repetition in rules TAG, COMMENT and LINE_COMMENT
@@ -47,16 +44,20 @@ PREPROC   <-   '#' (![\r\n] .)*
 WS   <-   [ \t\n\r]+
 ]===]
 
-g = m.match(s)
-print(m.match(s))
-print(pretty.printg(g, true), '\n')
-first.calcFst(g)
-first.calcFlw(g)
-first.getChoiceReport(g)
-first.getRepReport(g)
-local p = coder.makeg(g, 'ast')
+g = Parser.match(s)
+assert(g)
+pretty = Pretty.new()
+print(pretty:printg(g, nil, true))
+local c2p = Cfg2Peg.new(g)
+c2p:setPredUse(false)
+c2p:convert('ID', true)
+local peg = c2p.peg
+print(pretty:printg(peg, nil, true))
+
+local p = Coder.makeg(peg)
 --local peg = cfg2peg.convert(g, 'ID')
 --print(pretty.printg(peg, true), '\n')
-local dir = util.getPath(arg[0])
-util.testYes(dir .. '/yes/', 'dot', p)
+local dir = Util.getPath(arg[0])
+Util.testYes(dir .. '/yes/', 'dot', p)
+Util.testYes(dir .. '/grammarinator/', 'dot', p)
 
