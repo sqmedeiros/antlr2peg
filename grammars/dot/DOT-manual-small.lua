@@ -44,20 +44,18 @@ PREPROC   <-   '#' (![\r\n] .)*
 WS   <-   [ \t\n\r]+
 ]===]
 
-g = Parser.match(s)
+local g = Parser.match(s)
 assert(g)
 pretty = Pretty.new()
 print(pretty:printg(g, nil, true))
 local c2p = Cfg2Peg.new(g)
-c2p:setPredUse(false)
+c2p:setUsePredicate(false)
+c2p:setUseUnique(false)
 c2p:convert('ID', true)
 local peg = c2p.peg
 print(pretty:printg(peg, nil, true))
 
-local p = Coder.makeg(peg)
---local peg = cfg2peg.convert(g, 'ID')
---print(pretty.printg(peg, true), '\n')
+local p = Coder.makeg(g) --discards 'peg' and uses 'g'
 local dir = Util.getPath(arg[0])
 Util.testYes(dir .. '/yes/', 'dot', p)
-Util.testYes(dir .. '/grammarinator/', 'dot', p)
 

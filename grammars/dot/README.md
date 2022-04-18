@@ -25,6 +25,8 @@ A manual rewritten of some rules of DOT.lua.
 This rewritten encompass the minimal changes in the grammar of DOT.lua that
 are required to pass the tests provided with the DOT.g4 grammar.
  
+Check why the tests are failing when predicates are generated for the manual
+rewritten grammar.
 
 ## DOT-auto.lua
 
