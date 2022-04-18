@@ -7,13 +7,14 @@ public class MainListener {
     CharStream input;
     String fileExt = "";
     String ruleId = "ID";
+
     if (args.length > 0) {
       input = CharStreams.fromFileName(args[0]);
       if (args.length >= 2) {
         fileExt = args[1];
-        if (args.length >= 3) {
-          ruleId = args[2];
-        }
+	  }
+      if (args.length >= 3) {
+        ruleId = args[2];
       }
     }
     else
