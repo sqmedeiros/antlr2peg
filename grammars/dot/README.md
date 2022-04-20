@@ -65,7 +65,10 @@ Which criteria use to reorder non-disjoint alternatives?
 3. Unique tokens: a b b / a : b (assuming ":" is a unique token, a : b should come first)
 4. Put first the alternative that match tokens not matched by the other one (token path): A B / A C,
 where B matches all tokens matched by C and some others.
+5. Do nothing
 
+In case criterias 1 and 3 can be applied, they should always produce a correct result.
+On the other hand, the application of criterias 2 and 4 may produce incorect results. 
  
 ## DOT-auto.lua
 
