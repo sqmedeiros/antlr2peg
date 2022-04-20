@@ -58,6 +58,13 @@ and then reorder the alternatives or use predicates:
 Reordering: a (bc / cd / b / c)
 Predicates: a (!(bc) b / bc / !(cd) c / cd)
 
+Reordering is better than using predicates.
+Which criteria use to reorder non-disjoint alternatives?
+1. Check if the symbols of one alternative are a prefix of other one (easy case): a / a b
+2. Length of the alternatives: a b / x y z (put x y z first)
+3. Unique tokens: a b b / a : b (assuming ":" is a unique token, a : b should come first)
+4. Put first the alternative that match tokens not matched by the other one (token path): A B / A C,
+where B matches all tokens matched by C and some others.
 
  
 ## DOT-auto.lua
