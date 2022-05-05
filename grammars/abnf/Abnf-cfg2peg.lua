@@ -1,21 +1,18 @@
-local m = require 'pegparser.parser'
-local pretty = require 'pegparser.pretty'
-local coder = require 'pegparser.coder'
-local recovery = require 'pegparser.recovery'
-local ast = require'pegparser.ast'
-local util = require'pegparser.util'
-local first = require'pegparser.first'
-local cfg2peg = require'pegparser.cfg2peg'
+local Parser = require 'pegparser.parser'
+local Pretty = require 'pegparser.pretty'
+local Util = require'pegparser.util'
+local Cfg2Peg = require'pegparser.cfg2peg'
+local Coder = require'pegparser.coder'
 
 local s = [===[
 rulelist        <-  rule_* EOF
 rule_           <-  ID '=' '/'? elements
 elements        <-  alternation
 alternation     <-  concatenation ('/' concatenation)*
-concatenation   <-  rep_000
+concatenation   <-  __rep_001
 repetition      <-  repeat? element
-repeat          <-  INT? '*' INT?  /  INT
-element         <-  ID  /  group  /  option  /  string  /  NumberValue  /  ProseValue
+repeat          <-  INT  /  INT? '*' INT?
+element         <-  ID  /  group  /  option  /  STRING  /  NumberValue  /  ProseValue
 group           <-  '(' alternation ')'
 option          <-  '[' alternation ']'
 NumberValue     <-  '%' (BinaryValue  /  DecimalValue  /  HexValue)
@@ -27,36 +24,28 @@ ID              <-  LETTER (LETTER  /  DIGIT  /  '-')*
 INT             <-  [0-9]+
 COMMENT         <-  ';' (!('\n'  /  '\r') .)* '\r'? '\n'
 WS              <-  ' '  /  '\t'  /  '\r'  /  '\n'
-string          <-  ('%s'  /  '%i')? '"' (!'"' .)* '"'
+STRING          <-  ('%s'  /  '%i')? '"' (!'"' .)* '"'
 LETTER          <-  [a-z]  /  [A-Z]
 BIT             <-  [0-1]
 DIGIT           <-  [0-9]
 HEX_DIGIT       <-  [0-9]  /  [a-f]  /  [A-F]
-SPACE           <-  [ 	
-
-
-]  /  COMMENT
-SKIP            <-  ([ 	
-
-
-]  /  COMMENT)*
 EOF             <-  !.
-IDBegin__       <-  LETTER
-IDRest__        <-  (LETTER  /  DIGIT  /  '-')*
-rep_000         <-  repetition rep_000  /  repetition &(ID  /  EOF  /  ']'  /  '/'  /  ')'  /  !.)
+__IdBegin       <-  LETTER
+__IdRest        <-  (LETTER  /  DIGIT  /  '-')*
+__rep_001       <-  repetition __rep_001  /  repetition &(')'  /  '/'  /  ']'  /  '___EOF'  /  '___ID')
 ]===]
 
-g = m.match(s)
-print(m.match(s))
-print(pretty.printg(g, true), '\n')
-first.calcFst(g)
-first.calcFlw(g)
-first.getChoiceReport(g)
-first.getRepReport(g)
-local p = coder.makeg(g, 'ast')
---local peg = cfg2peg.convert(g, 'ID')
---print(pretty.printg(peg, true), '\n')
-local dir = util.getPath(arg[0])
---util.testYes(dir .. '/yes/', 'abnf', p)
-util.testYes('/home/sergio/software/grammar-based-testing/grammars/abnf/', 'abnf', p)
+local g = Parser.match(s)
+assert(g)
+pretty = Pretty.new()
+print(pretty:printg(g, nil, true))
+local c2p = Cfg2Peg.new(g)
+--c2p:setUsePredicate(false)
+c2p:setUseUnique(false)
+c2p:convert('ID', true)
+local peg = c2p.peg
+print(pretty:printg(peg, nil, true))
 
+local p = Coder.makeg(peg)
+local dir = Util.getPath(arg[0])
+Util.testYes(dir .. '/yes/', 'abnf', p)
