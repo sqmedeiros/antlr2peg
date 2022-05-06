@@ -46,3 +46,4 @@ print(pretty:printg(peg, nil, true))
 local p = Coder.makeg(g)  --discards 'peg' and uses 'g'
 local dir = Util.getPath(arg[0])
 Util.testYes(dir .. '/yes/', 'abnf', p)
+Util.testYes(dir .. '/gramm-yes/', 'abnf', p)

@@ -60,5 +60,6 @@ print(pretty:printg(g, nil, true))
 local p = Coder.makeg(g)
 local dir = Util.getPath(arg[0])
 Util.testYes(dir .. '/yes/', 'abnf', p)
+Util.testYes(dir .. '/gramm-yes/', 'abnf', p)
 
 

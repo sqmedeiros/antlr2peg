@@ -73,8 +73,9 @@ __IdBegin       <-  LETTER
 __IdRest        <-  (LETTER  /  DIGIT  /  '-')*
 ]===]
 
-peg = Parser.match(expectedOutput)
+--peg = Parser.match(expectedOutput)
 
 local p = Coder.makeg(peg)
 local dir = Util.getPath(arg[0])
 Util.testYes(dir .. '/yes/', 'abnf', p)
+Util.testYes(dir .. '/gramm-yes/', 'abnf', p)
