@@ -1,11 +1,8 @@
-local m = require 'pegparser.parser'
-local pretty = require 'pegparser.pretty'
-local coder = require 'pegparser.coder'
-local recovery = require 'pegparser.recovery'
-local ast = require'pegparser.ast'
-local util = require'pegparser.util'
-local first = require'pegparser.first'
---local cfg2peg = require'pegparser.cfg2peg'
+local Parser = require 'pegparser.parser'
+local Pretty = require 'pegparser.pretty'
+local Util = require'pegparser.util'
+local Cfg2Peg = require'pegparser.cfg2peg'
+local Coder = require'pegparser.coder'
 --Manually fixing the problems after ANTLR2PEG
 --Fixes are not necesseraly easy/viable to implement automatically
 
@@ -38,17 +35,19 @@ DIGIT   <-   [0-9]
 HEX_DIGIT   <-   ([0-9]  /  [a-f]  /  [A-F])
 ]===]
 
-g = m.match(s)
-print(m.match(s))
-print(pretty.printg(g, true), '\n')
-first.calcFst(g)
-first.calcFlw(g)
-first.getChoiceReport(g)
-first.getRepReport(g)
-local p = coder.makeg(g, 'ast')
---local peg = cfg2peg.convert(g, 'ID')
---print(pretty.printg(peg, true), '\n')
-local dir = util.getPath(arg[0])
-util.testYes(dir .. '/yes/', 'abnf', p)
+local g = Parser.match(s)
+assert(g)
+pretty = Pretty.new()
+print(pretty:printg(g, nil, true))
+--local c2p = Cfg2Peg.new(g)
+--c2p:setUsePredicate(false)
+--c2p:setUseUnique(false)
+--c2p:convert('ID', true)
+--local peg = c2p.peg
+--print(pretty:printg(peg, nil, true))
+
+local p = Coder.makeg(g)
+local dir = Util.getPath(arg[0])
+Util.testYes(dir .. '/yes/', 'abnf', p)
 
 

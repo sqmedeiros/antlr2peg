@@ -36,12 +36,13 @@ assert(g)
 pretty = Pretty.new()
 print(pretty:printg(g, nil, true))
 local c2p = Cfg2Peg.new(g)
---c2p:setUsePredicate(false)
-c2p:setUseUnique(false)
+c2p:setUsePrefix(false)
+c2p:setUseUnique(true)
 c2p:convert('ID', true)
 local peg = c2p.peg
 print(pretty:printg(peg, nil, true))
 
-local p = Coder.makeg(peg)
+
+local p = Coder.makeg(g)  --discards 'peg' and uses 'g'
 local dir = Util.getPath(arg[0])
 Util.testYes(dir .. '/yes/', 'abnf', p)
