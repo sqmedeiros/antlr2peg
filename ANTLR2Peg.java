@@ -35,7 +35,7 @@ public class ANTLR2Peg extends ANTLRv4ParserBaseListener {
        + "print(pretty:printg(g, nil, true))\n"
        + "local c2p = Cfg2Peg.new(g)\n"
        + "c2p:setUsePredicate(false)\n"
-       + "c2p:setUseUnique(false)\n"
+       + "c2p:setUsePrefix(false)\n"
        + "c2p:convert('" + this.ruleId + "', true)\n"
        + "local peg = c2p.peg\n"
        + "print(pretty:printg(peg, nil, true))\n\n"
