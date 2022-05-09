@@ -143,7 +143,9 @@ fragment DIGIT
 
 
 fragment LETTER
-   : [a-zA-Z\u0080-\u00FF_]
+//   : [a-zA-Z\u0080-\u00FF_]
+// Simpler definition of LETTER
+    : [a-zA-Z_]
    ;
 
 

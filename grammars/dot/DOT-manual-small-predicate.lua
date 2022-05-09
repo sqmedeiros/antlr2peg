@@ -49,7 +49,7 @@ assert(g)
 pretty = Pretty.new()
 print(pretty:printg(g, nil, true))
 local c2p = Cfg2Peg.new(g)
-c2p:setUsePredicate(true)
+--c2p:setUsePredicate(true)
 c2p:setUseUnique(false)
 c2p:convert('ID', true)
 local peg = c2p.peg
