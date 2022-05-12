@@ -74,8 +74,8 @@ SUBGRAPH        <-  [Ss] [Uu] [Bb] [Gg] [Rr] [Aa] [Pp] [Hh]
 NUMBER          <-  '-'? ('.' DIGIT+  /  DIGIT+ ('.' DIGIT*)?)
 DIGIT           <-  [0-9]
 STRING          <-  '"' (!'"' ('\\"'  /  .))* '"'
-ID              <-  LETTER (LETTER  /  DIGIT)*
-LETTER          <-  [a-zA-Z\u0080-\u00FF_]
+ID              <-  !(STRICT / GRAPH / DIGRAPH / NODE / EDGE / SUBGRAPH) LETTER (LETTER  /  DIGIT)*
+LETTER          <-  [a-zA-Z_]
 HTML_STRING     <-  '<' (TAG  /  ![<>] .)* '>'
 TAG             <-  '<' (!'>' .)* '>'
 COMMENT         <-  '/*' (!'*/' .)* '*/'

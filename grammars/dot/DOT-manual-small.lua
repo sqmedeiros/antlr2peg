@@ -35,7 +35,7 @@ DIGIT   <-   [0-9]
 --[Original] STRING   <-   '"' ('\\"'  /  .)*? '"'
 STRING   <-   '"' (!'"' ('\\"'  /  .))* '"'
 ID   <-   LETTER (LETTER  /  DIGIT)*
-LETTER   <-   [a-zA-Z\u0080-\u00FF_]
+LETTER   <-   [a-zA-Z_]
 HTML_STRING   <-   '<' (TAG  /  (![<>] .))* '>'
 TAG   <-   '<' .*? '>'
 COMMENT   <-   '/*' .*? '*/'

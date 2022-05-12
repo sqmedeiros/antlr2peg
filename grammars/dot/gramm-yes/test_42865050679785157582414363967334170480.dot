@@ -1,1 +1,2 @@
-GrAph -.02  { SubGRAPH ""  { <>  = o5   GRApH [ ]     }  ->  SUBgRAPH   {  }  ->  1.18    [ ]     } 
+GrAph -.02  { SubGRAPH ""  { <>  = o5   GRApH [ ]     }  ->  SUBgRAPH PAD  {  }  ->  1.18    [ ]     } 
+//GrAph -.02  { SubGRAPH ""  { <>  = o5   GRApH [ ]     }  ->  SUBgRAPH   {  }  ->  1.18    [ ]     } 
