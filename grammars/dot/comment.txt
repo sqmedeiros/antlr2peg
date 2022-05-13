@@ -1,0 +1,12 @@
+* gramm-yes/test_102732708493124451334731538444127072047.dot:
+
+  - Original:
+  dIGrAPh { gRaph [ HB  ,  ] [ .25  = .5  .1  -.6  ""  , <<><>	d><>><>>  = s  , 27  = Y10t0neTfe  ,  ]    ; <<K>>  : "\"k"  : 7    --  "%"  : <>    ->  <>       } 
+
+  - Modified:
+  dIGrAPh { gRaph [ HB  ,  ] [ .25  = .5  .1  -.6  ""  , <<><>	d><><>  = s  , 27  = Y10t0neTfe  ,  ]    ; <<K>>  : "\"k"  : 7    --  "%"  : <>    ->  <>       } 
+	
+  - Rules related to the problem: a_list, HTML_STRING, TAG
+  Input "<<><>	d><>><>>" is not a valid HTML string
+  The input "<<><>	d><><>" is valid
+

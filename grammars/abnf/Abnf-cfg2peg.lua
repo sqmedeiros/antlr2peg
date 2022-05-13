@@ -77,5 +77,7 @@ __IdRest        <-  (LETTER  /  DIGIT  /  '-')*
 
 local p = Coder.makeg(peg)
 local dir = Util.getPath(arg[0])
-Util.testYes(dir .. '/yes/', 'abnf', p)
-Util.testYes(dir .. '/gramm-yes/', 'abnf', p)
+Util.testYes(dir .. '/examples/', 'abnf', p)
+Util.testYes(dir .. '/grammarinator/tests_01/', 'abnf', p)
+Util.testYes(dir .. '/grammarinator/tests_02/', 'abnf', p)
+Util.testYes(dir .. '/grammarinator/tests_03/', 'abnf', p)
