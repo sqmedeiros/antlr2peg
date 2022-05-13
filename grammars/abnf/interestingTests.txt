@@ -1,0 +1,8 @@
+1. grammarinator/tests_04/test_2878153605691131279435791100517606654.abnf
+   - Grammarinator generated a ProseValue "<>>" , but this seems wrong according the
+     definition of ProseValue in Abnf.g4:
+     ProseValue: '<' ( ~ '>' )* '>';
+     
+   - Both ANTLR and Abnf-cfg2peg.lua rejected this input
+   
+   - Fix: Changed "<>>" to "<>"
