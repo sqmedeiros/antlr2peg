@@ -29,7 +29,7 @@ NUMBER   <-   '-'? ('.' DIGIT+  /  DIGIT+ ('.' DIGIT*)?)
 DIGIT   <-   [0-9]
 STRING   <-   '"' ('\\"'  /  .)*? '"'
 ID   <-   LETTER (LETTER  /  DIGIT)*
-LETTER   <-   [a-zA-Z\u0080-\u00FF_]
+LETTER   <-   [a-zA-Z_]
 HTML_STRING   <-   '<' (TAG  /  (![<>] .))* '>'
 TAG   <-   '<' .*? '>'
 COMMENT   <-   '/*' .*? '*/'
@@ -43,13 +43,14 @@ assert(g)
 pretty = Pretty.new()
 print(pretty:printg(g, nil, true))
 local c2p = Cfg2Peg.new(g)
---c2p:setUsePrefix(false)
-c2p:setUseUnique(true)
+c2p:setUseUnique(false)
+c2p:setUsePrefix(false)
 c2p:convert('ID', true)
 local peg = c2p.peg
 print(pretty:printg(peg, nil, true))
 
-local p = Coder.makeg(g) --discards 'peg' and uses 'g'
+local p = Coder.makeg(peg) --discards 'peg' and uses 'g'
 local dir = Util.getPath(arg[0])
-Util.testYes(dir .. '/yes/', 'dot', p)
+Util.testYes(dir .. '/examples/', 'dot', p)
+Util.testYes(dir .. '/grammarinator/tests_01/', 'dot', p)
 

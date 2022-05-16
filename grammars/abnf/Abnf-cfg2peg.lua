@@ -36,8 +36,8 @@ assert(g)
 pretty = Pretty.new()
 print(pretty:printg(g, nil, true))
 local c2p = Cfg2Peg.new(g)
---c2p:setUsePredicate(false)
-c2p:setUseUnique(true)
+c2p:setUsePrefix(true)
+--c2p:setUseUnique(true)
 c2p:convert('ID', true)
 local peg = c2p.peg
 print(pretty:printg(peg, nil, true))
@@ -73,7 +73,8 @@ __IdBegin       <-  LETTER
 __IdRest        <-  (LETTER  /  DIGIT  /  '-')*
 ]===]
 
---peg = Parser.match(expectedOutput)
+
+assert(Util.sameWithoutSpace(pretty:printg(peg, nil, true), expectedOutput))
 
 local p = Coder.makeg(peg)
 local dir = Util.getPath(arg[0])
