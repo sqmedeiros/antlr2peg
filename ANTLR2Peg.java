@@ -201,8 +201,12 @@ public class ANTLR2Peg extends ANTLRv4ParserBaseListener {
 	}
 	
 	@Override 
-	public void exitLexerRuleSpec(ANTLRv4Parser.LexerRuleSpecContext ctx) { 
-		String code = ctx.TOKEN_REF().getText() + "   <-   ";
+	public void exitLexerRuleSpec(ANTLRv4Parser.LexerRuleSpecContext ctx) {
+		String code = "";
+		if (ctx.FRAGMENT() != null) {
+			code = ctx.FRAGMENT().getText() + " ";
+		}
+		code += ctx.TOKEN_REF().getText() + "   <-   ";
 		code += getCode(ctx.lexerRuleBlock());
 		setCode(ctx, code);
 	}
