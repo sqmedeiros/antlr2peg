@@ -26,12 +26,12 @@ NODE   <-   [Nn] [Oo] [Dd] [Ee]
 EDGE   <-   [Ee] [Dd] [Gg] [Ee]
 SUBGRAPH   <-   [Ss] [Uu] [Bb] [Gg] [Rr] [Aa] [Pp] [Hh]
 NUMBER   <-   '-'? ('.' DIGIT+  /  DIGIT+ ('.' DIGIT*)?)
-DIGIT   <-   [0-9]
+fragment DIGIT   <-   [0-9]
 STRING   <-   '"' ('\\"'  /  .)*? '"'
 ID   <-   LETTER (LETTER  /  DIGIT)*
-LETTER   <-   [a-zA-Z_]
+fragment LETTER   <-   [a-zA-Z_]
 HTML_STRING   <-   '<' (TAG  /  (![<>] .))* '>'
-TAG   <-   '<' .*? '>'
+fragment TAG   <-   '<' .*? '>'
 COMMENT   <-   '/*' .*? '*/'
 LINE_COMMENT   <-   '//' .*? '\r'? '\n'
 PREPROC   <-   '#' (![\r\n] .)*
@@ -43,8 +43,8 @@ assert(g)
 pretty = Pretty.new()
 print(pretty:printg(g, nil, true))
 local c2p = Cfg2Peg.new(g)
-c2p:setUseUnique(false)
-c2p:setUsePrefix(false)
+c2p:setUseUnique(true)
+c2p:setUsePrefix(true)
 c2p:convert('ID', true)
 local peg = c2p.peg
 print(pretty:printg(peg, nil, true))
