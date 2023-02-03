@@ -1,0 +1,7 @@
+Grammar    Unique File     Left-recursion     #Lines (parser + lexer)
+
+abb            No               No                      367
+abnf          Yes               No                      157
+acme          Yes               No                     1020        
+ada (2012)     No              Yes                    +1500
+agc           Yes              Yes                      604
