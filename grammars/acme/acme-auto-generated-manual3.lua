@@ -293,5 +293,6 @@ Util.testYes(dir .. '/grammarinator/tests_01/', 'acmetest', p)
 Util.testYes(dir .. '/grammarinator/tests_02/', 'acmetest', p)
 Util.testYes(dir .. '/grammarinator/tests_03/', 'acmetest', p)
 Util.testYes(dir .. '/grammarinator/tests_04/', 'acmetest', p)
-
+Util.testYes(dir .. '/outputNoTk/yes/', 'acmetest', p)
+Util.testNo(dir .. '/outputNoTk/no/', 'acmetest', p)
 

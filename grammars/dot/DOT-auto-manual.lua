@@ -66,5 +66,7 @@ Util.testYes(dir .. '/grammarinator/tests_01/', 'dot', p)
 Util.testYes(dir .. '/grammarinator/tests_02/', 'dot', p)
 Util.testYes(dir .. '/grammarinator/tests_03/', 'dot', p)
 Util.testYes(dir .. '/grammarinator/tests_04_SimpleId/', 'dot', p)
-Util.testYes(dir .. '/grammarinator/tests_04_SimpleId/', 'dot', p)
+Util.testYes(dir .. '/outputNoTk/yes/', 'dot', p)
+Util.testNo(dir .. '/outputNoTk/no/', 'dot', p)
+
 
