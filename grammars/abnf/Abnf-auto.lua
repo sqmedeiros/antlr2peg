@@ -42,16 +42,10 @@ __IdBegin       <-  LETTER
 __IdRest        <-  LETTER  /  DIGIT  /  '-'
 ]===]
 
-local g = Parser.match(s)
-assert(g)
+local peg = Parser.match(s)
+assert(peg)
 pretty = Pretty.new()
-print(pretty:printg(g, nil, true))
---local c2p = Cfg2Peg.new(g)
---c2p:setUseUnique(false)
---c2p:setUsePrefix(true)
---c2p:convert('ID', true)
-local peg = g--c2p.peg
---print(pretty:printg(peg, nil, true))
+print(pretty:printg(peg, nil, true))
 
 local p = Coder.makeg(peg)
 local dir = Util.getPath(arg[0])
