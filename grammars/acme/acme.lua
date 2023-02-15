@@ -1,14 +1,11 @@
-local m = require 'pegparser.parser'
-local pretty = require 'pegparser.pretty'
-local coder = require 'pegparser.coder'
-local recovery = require 'pegparser.recovery'
-local ast = require'pegparser.ast'
-local util = require'pegparser.util'
-local first = require'pegparser.first'
-local cfg2peg = require'pegparser.cfg2peg'
+local Parser = require 'pegparser.parser'
+local Pretty = require 'pegparser.pretty'
+local Util = require'pegparser.util'
+local Cfg2Peg = require'pegparser.cfg2peg'
+local Coder = require'pegparser.coder'
 
 local s = [===[
-acmeCompUnit   <-   (acmeImportDeclaration )* (acmeSystemDeclaration   /  acmeFamilyDeclaration   /  acmeDesignDeclaration )+ 
+acmeCompUnit   <-   (acmeImportDeclaration )* (acmeSystemDeclaration   /  acmeFamilyDeclaration   /  acmeDesignDeclaration )+ EOF 
 acmeImportDeclaration   <-   IMPORT (filename   /  stringLiteral ) SEMICOLON 
 stringLiteral   <-   STRING_LITERAL 
 filename   <-   ('$'   /  '%' )? IDENTIFIER ((('.'   /  ':'   /  '-'   /  '+'   /  '\\'   /  '\\\\'   /  '/'   /  '$'   /  '%' ) )+ IDENTIFIER )* 
@@ -214,32 +211,32 @@ VIEW   <-   V I E W
 BIT_OR   <-   '|'
 TRUE   <-   T R U E
 FALSE   <-   F A L S E
-A   <-   ('a'  /  'A')
-B   <-   ('b'  /  'B')
-C   <-   ('c'  /  'C')
-D   <-   ('d'  /  'D')
-E   <-   ('e'  /  'E')
-F   <-   ('f'  /  'F')
-G   <-   ('g'  /  'G')
-H   <-   ('h'  /  'H')
-I   <-   ('i'  /  'I')
-J   <-   ('j'  /  'J')
-K   <-   ('k'  /  'K')
-L   <-   ('l'  /  'L')
-M   <-   ('m'  /  'M')
-N   <-   ('n'  /  'N')
-O   <-   ('o'  /  'O')
-P   <-   ('p'  /  'P')
-Q   <-   ('q'  /  'Q')
-R   <-   ('r'  /  'R')
-S   <-   ('s'  /  'S')
-T   <-   ('t'  /  'T')
-U   <-   ('u'  /  'U')
-V   <-   ('v'  /  'V')
-W   <-   ('w'  /  'W')
-X   <-   ('x'  /  'X')
-Y   <-   ('y'  /  'Y')
-Z   <-   ('z'  /  'Z')
+fragment A   <-   ('a'  /  'A')
+fragment B   <-   ('b'  /  'B')
+fragment C   <-   ('c'  /  'C')
+fragment D   <-   ('d'  /  'D')
+fragment E   <-   ('e'  /  'E')
+fragment F   <-   ('f'  /  'F')
+fragment G   <-   ('g'  /  'G')
+fragment H   <-   ('h'  /  'H')
+fragment I   <-   ('i'  /  'I')
+fragment J   <-   ('j'  /  'J')
+fragment K   <-   ('k'  /  'K')
+fragment L   <-   ('l'  /  'L')
+fragment M   <-   ('m'  /  'M')
+fragment N   <-   ('n'  /  'N')
+fragment O   <-   ('o'  /  'O')
+fragment P   <-   ('p'  /  'P')
+fragment Q   <-   ('q'  /  'Q')
+fragment R   <-   ('r'  /  'R')
+fragment S   <-   ('s'  /  'S')
+fragment T   <-   ('t'  /  'T')
+fragment U   <-   ('u'  /  'U')
+fragment V   <-   ('v'  /  'V')
+fragment W   <-   ('w'  /  'W')
+fragment X   <-   ('x'  /  'X')
+fragment Y   <-   ('y'  /  'Y')
+fragment Z   <-   ('z'  /  'Z')
 BOOLEAN   <-   TRUE  /  FALSE
 FLOATING_POINT_LITERAL   <-   ('-'  /  '+')? [0-9]+ '.' [0-9]+
 INTEGER_LITERAL   <-   [0-9]+
@@ -250,16 +247,24 @@ BLOCK_COMMENT   <-   '/*' .*? '*/'
 WS   <-   [ \r\n\t]+
 ]===]
 
-g = m.match(s)
-print(m.match(s))
-print(pretty.printg(g, true), '\n')
-first.calcFst(g)
-first.calcFlw(g)
-first.getChoiceReport(g)
-first.getRepReport(g)
-local p = coder.makeg(g, 'ast')
-local peg = cfg2peg.convert(g, 'IDENTIFIER')
-print(pretty.printg(peg, true), '\n')
-local dir = util.getPath(arg[0])
-util.testYes(dir .. '/yes/', 'acmetest', p)
+local g = Parser.match(s)
+assert(g)
+pretty = Pretty.new()
+print(pretty:printg(g, nil, true))
+local c2p = Cfg2Peg.new(g)
+c2p:setUseUnique(false)
+c2p:setUsePrefix(true)
+c2p:convert('IDENTIFIER', true)
+local peg = c2p.peg
+print(pretty:printg(peg, nil, true))
+
+local p = Coder.makeg(peg)
+local dir = Util.getPath(arg[0])
+Util.testYes(dir .. '/examples/', 'acmetest', p)
+Util.testYes(dir .. '/grammarinator/tests_01/', 'acmetest', p)
+Util.testYes(dir .. '/grammarinator/tests_02/', 'acmetest', p)
+Util.testYes(dir .. '/grammarinator/tests_03/', 'acmetest', p)
+Util.testYes(dir .. '/grammarinator/tests_04/', 'acmetest', p)
+Util.testYes(dir .. '/outputNoTk/yes/', 'acmetest', p)
+Util.testNo(dir .. '/outputNoTk/no/', 'acmetest', p)
 
