@@ -35,14 +35,19 @@ public class ANTLR2Peg extends ANTLRv4ParserBaseListener {
        + "print(pretty:printg(g, nil, true))\n"
        + "local c2p = Cfg2Peg.new(g)\n"
        + "c2p:setUseUnique(false)\n"
-       + "c2p:setUsePrefix(false)\n"
+       + "c2p:setUsePrefix(true)\n"
        + "c2p:convert('" + this.ruleId + "', true)\n"
        + "local peg = c2p.peg\n"
        + "print(pretty:printg(peg, nil, true))\n\n"
        + "local p = Coder.makeg(peg)\n"
        + "local dir = Util.getPath(arg[0])\n"
        + "Util.testYes(dir .. '/examples/', '" + this.fileExt + "', p)\n"
-       + "Util.testYes(dir .. '/grammarinator/tests_01/', '" + this.fileExt + "', p)\n";
+       + "Util.testYes(dir .. '/grammarinator/tests_01/', '" + this.fileExt + "', p)\n"
+       + "Util.testYes(dir .. '/grammarinator/tests_02/', '" + this.fileExt + "', p)\n"
+       + "Util.testYes(dir .. '/grammarinator/tests_03/', '" + this.fileExt + "', p)\n"
+       + "Util.testYes(dir .. '/grammarinator/tests_04/', '" + this.fileExt + "', p)\n"
+       + "Util.testYes(dir .. '/outputNoTk/yes/', '" + this.fileExt + "', p)\n"
+       + "Util.testNo(dir .. '/outputNoTk/no/', '" + this.fileExt + "', p)\n";
   }
               
   final String assertMsg = "Opção não suportada pelo pegparser";
